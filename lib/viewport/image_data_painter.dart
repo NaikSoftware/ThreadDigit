@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
@@ -49,12 +49,8 @@ class _ImageDataWidgetState extends State<ImageDataWidget> {
         } else if (snapshot.hasError) {
           return Text('Error loading image: ${snapshot.error}');
         }
-        return SizedBox(
-          width: max(uiImage.width.toDouble(), screenSize.width),
-          height: max(uiImage.height.toDouble(), screenSize.height),
-          child: CustomPaint(
-            painter: ImageDataPainter(snapshot.data!),
-          ),
+        return CustomPaint(
+          painter: ImageDataPainter(snapshot.data!),
         );
       },
     );
