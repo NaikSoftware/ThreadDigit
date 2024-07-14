@@ -65,6 +65,7 @@ class _EditorViewportState extends State<EditorViewport> {
       body: InteractiveViewer(
         constrained: false,
         minScale: 0.1,
+        maxScale: 10,
         child: SizedBox(
           width: math.max(image.width.toDouble(), screenSize.width),
           height: math.max(image.height.toDouble(), screenSize.height),

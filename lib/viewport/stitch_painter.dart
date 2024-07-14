@@ -24,7 +24,7 @@ class StitchesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawColor(Colors.amber.shade50, BlendMode.src);
+    canvas.drawColor(Colors.blue.shade500, BlendMode.src);
     for (var sequence in stitchSequences) {
       final paint = Paint()
         ..color = sequence.color
