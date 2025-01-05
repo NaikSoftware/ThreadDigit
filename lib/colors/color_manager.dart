@@ -193,15 +193,13 @@ class EmbroideryMachine {
 class ColorManager {
   List<EmbroideryStep> optimizeColors(List<String> designColors, List<String> initialThreads) {
     var machine = EmbroideryMachine(initialThreads);
-    var design = [];
 
     debugPrint('Initial configuration:');
     for (int i = 0; i < machine.currentSetup.length; i++) {
       debugPrint('Needle ${i + 1}: ${machine.currentSetup[i]}');
     }
-    debugPrint('\nDesign thread sequence: $design\n');
 
-    var steps = machine.optimizeThreadChanges(designColors);
+    final steps = machine.optimizeThreadChanges(designColors);
 
     debugPrint('Optimized embroidery steps:');
     for (int i = 0; i < steps.length; i++) {

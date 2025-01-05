@@ -140,6 +140,6 @@ class ColorMatcherUtil {
     // Maximum possible distance in RGB space with weights
     final double maxDistance = sqrt(redWeight * pow(255, 2) + greenWeight * pow(255, 2) + blueWeight * pow(255, 2));
 
-    return (distance / maxDistance) * 100;
+    return (1 - distance / maxDistance) * 100;
   }
 }
