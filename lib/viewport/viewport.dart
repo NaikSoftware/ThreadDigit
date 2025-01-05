@@ -1,9 +1,11 @@
 import 'dart:math' as math;
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:thread_digit/photostitch/photo_stitch.dart';
 import 'package:thread_digit/viewport/image_data_painter.dart';
+import 'package:thread_digit/viewport/segment_painter.dart';
 import 'package:thread_digit/viewport/stitch_painter.dart';
 
 /*
@@ -28,6 +30,14 @@ class EditorViewport extends StatefulWidget {
 class _EditorViewportState extends State<EditorViewport> {
   late img.Image image;
   List<StitchSequence> stitchSequences = [];
+  bool _isPlaying = false;
+  int _currentStitchIndex = 0;
+  int _currentSequenceIndex = 0;
+  static const Duration stitchDelay = Duration(milliseconds: 1);
+  bool _showingSegments = false;
+  List<List<Point<int>>> _segments = [];
+  List<Color> _segmentColors = [];
+  int _currentSegmentIndex = 0;
 
   @override
   void initState() {
@@ -50,16 +60,14 @@ class _EditorViewportState extends State<EditorViewport> {
       appBar: AppBar(
         title: const Text('Editor'),
         actions: <Widget>[
+          IconButton(icon: const Icon(Icons.compare_outlined), onPressed: _onPrepareImage),
+          IconButton(icon: const Icon(Icons.stacked_line_chart), onPressed: _onStitchImage),
+          IconButton(icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow), onPressed: _togglePlay),
+          IconButton(icon: const Icon(Icons.animation), onPressed: _animateSegments),
           IconButton(
-              icon: const Icon(Icons.compare_outlined),
-              onPressed: () {
-                _onPrepareImage();
-              }),
-          IconButton(
-              icon: const Icon(Icons.stacked_line_chart),
-              onPressed: () {
-                _onStitchImage();
-              }),
+            icon: const Icon(Icons.visibility),
+            onPressed: _showAllStitches,
+          ),
         ],
       ),
       body: InteractiveViewer(
@@ -70,7 +78,15 @@ class _EditorViewportState extends State<EditorViewport> {
           width: math.max(image.width.toDouble(), screenSize.width),
           height: math.max(image.height.toDouble(), screenSize.height),
           child: stitchSequences.isNotEmpty
-              ? StitchesWidget(stitchSequences: stitchSequences)
+              ? CustomPaint(
+                  painter: _showingSegments
+                      ? SegmentPainter(_segments, _segmentColors, _currentSegmentIndex)
+                      : StitchesPainter(
+                          stitchSequences,
+                          currentSequenceIndex: _currentSequenceIndex,
+                          currentStitchIndex: _currentStitchIndex,
+                        ),
+                )
               : ImageDataWidget(image: image),
         ),
       ),
@@ -85,7 +101,73 @@ class _EditorViewportState extends State<EditorViewport> {
 
   void _onStitchImage() {
     setState(() {
-      stitchSequences = stitchImage(image);
+      stitchSequences = EmbroideryGenerator().generateEmbroidery(image);
     });
+  }
+
+  void _togglePlay() {
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+    if (_isPlaying) {
+      _playNextStitch();
+    }
+  }
+
+  void _playNextStitch() {
+    if (!_isPlaying) return;
+
+    if (_currentSequenceIndex < stitchSequences.length) {
+      var sequence = stitchSequences[_currentSequenceIndex];
+      if (_currentStitchIndex < sequence.stitches.length) {
+        setState(() {
+          _currentStitchIndex++;
+        });
+        Future.delayed(stitchDelay, _playNextStitch);
+      } else {
+        if (_currentSequenceIndex < stitchSequences.length - 1) {
+          _currentSequenceIndex++;
+          _currentStitchIndex = 0;
+        }
+        _togglePlay(); // Pause at the end of each sequence
+      }
+    }
+  }
+
+  void _showAllStitches() {
+    setState(() {
+      _currentSequenceIndex = stitchSequences.length - 1;
+      _currentStitchIndex = stitchSequences.isNotEmpty ? stitchSequences[_currentSequenceIndex].stitches.length : 0;
+      _isPlaying = false;
+    });
+  }
+
+  void _animateSegments() {
+    if (_segments.isEmpty) {
+      final embroideryGenerator = EmbroideryGenerator();
+      final result = embroideryGenerator.segmentImage(img.copyResize(image, width: 300), 7, 10, 5);
+      _segments = result.$1;
+      _segmentColors = result.$2;
+    }
+
+    setState(() {
+      _showingSegments = true;
+      _currentSegmentIndex = 0;
+    });
+
+    _animateNextSegment();
+  }
+
+  void _animateNextSegment() {
+    if (_currentSegmentIndex < _segments.length) {
+      setState(() {
+        _currentSegmentIndex++;
+      });
+      Future.delayed(const Duration(milliseconds: 100), _animateNextSegment);
+    } else {
+      setState(() {
+        // _showingSegments = false;
+      });
+    }
   }
 }
