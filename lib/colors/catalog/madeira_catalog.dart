@@ -1,6 +1,6 @@
 ﻿// This file is generated automatically. DO NOT EDIT.
 // Catalog of Madeira colors
-import 'package:thread_digit/colors/thread_color.dart';
+import 'package:thread_digit/colors/model/thread_color.dart';
 
 const List<ThreadColor> madeiraRayonColors = [
   ThreadColor(

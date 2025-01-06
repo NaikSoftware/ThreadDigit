@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:thread_digit/colors/thread_color.dart';
+import 'package:thread_digit/colors/model/thread_color.dart';
 
 class ColorMatcherUtil {
   // Find exact matching color from all catalogs

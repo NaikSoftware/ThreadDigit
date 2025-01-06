@@ -1,54 +1,14 @@
 import 'package:flutter/foundation.dart';
+import 'package:thread_digit/colors/model/embroidery_step.dart';
+import 'package:thread_digit/colors/model/stitch_operation.dart';
+import 'package:thread_digit/colors/model/thread_change.dart';
 
-class ThreadChange {
-  final int needleIndex;
-  final String oldThread;
-  final String newThread;
-
-  ThreadChange(this.needleIndex, this.oldThread, this.newThread);
-
-  @override
-  String toString() => 'Needle ${needleIndex + 1}: $oldThread -> $newThread';
-}
-
-class StitchOperation {
-  final String thread;
-  final int needleIndex;
-
-  StitchOperation(this.thread, this.needleIndex);
-
-  @override
-  String toString() => '$thread(${needleIndex + 1})';
-}
-
-class EmbroideryStep {
-  final List<ThreadChange> changes;
-  final List<StitchOperation> stitchOperations;
-  final List<String> currentSetup;
-
-  EmbroideryStep(this.changes, this.stitchOperations, this.currentSetup);
-
-  void addOperations(List<StitchOperation> operations) {
-    stitchOperations.addAll(operations);
-  }
-
-  @override
-  String toString() {
-    String result = '';
-    if (changes.isNotEmpty) {
-      result += 'Thread changes:\n${changes.join('\n')}\n';
-    }
-    result += 'Embroidery sequence: ${stitchOperations.join(' -> ')}';
-    return result;
-  }
-}
-
-class EmbroideryMachine {
+class _EmbroideryMachine {
   final int needleCount;
   List<String> currentSetup;
   Map<String, int> threadToNeedle = {};
 
-  EmbroideryMachine(List<String> initialThreads)
+  _EmbroideryMachine(List<String> initialThreads)
       : needleCount = initialThreads.length,
         currentSetup = List.from(initialThreads) {
     if (initialThreads.any((thread) => thread.isEmpty)) {
@@ -192,7 +152,7 @@ class EmbroideryMachine {
 
 class ColorManager {
   List<EmbroideryStep> optimizeColors(List<String> designColors, List<String> initialThreads) {
-    var machine = EmbroideryMachine(initialThreads);
+    var machine = _EmbroideryMachine(initialThreads);
 
     debugPrint('Initial configuration:');
     for (int i = 0; i < machine.currentSetup.length; i++) {

@@ -6,8 +6,8 @@ import 'package:thread_digit/colors/catalog/gunold_cotty_zusatz_catalog.dart';
 import 'package:thread_digit/colors/catalog/gunold_sulky_catalog.dart';
 import 'package:thread_digit/colors/catalog/isacord_catalog.dart';
 import 'package:thread_digit/colors/catalog/madeira_catalog.dart';
-import 'package:thread_digit/colors/color_matcher.dart';
-import 'package:thread_digit/colors/thread_color.dart';
+import 'package:thread_digit/colors/service/color_matcher.dart';
+import 'package:thread_digit/colors/model/thread_color.dart';
 
 /// Represents a thread color in Embird design.
 class EmThreadColor {

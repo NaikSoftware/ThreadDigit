@@ -17,6 +17,14 @@ class ThreadColor {
     this.percentage = 100.0,
   });
 
+  const ThreadColor.empty({required this.code})
+      : name = '',
+        red = 0,
+        green = 0,
+        blue = 0,
+        catalog = '',
+        percentage = 100.0;
+
   ThreadColor withPercentage(double newPercentage) => ThreadColor(
     name: name,
     code: code,
