@@ -1,4 +1,8 @@
-class ThreadColor {
+import 'dart:ui';
+
+import 'package:equatable/equatable.dart';
+
+class ThreadColor with EquatableMixin {
   final String name;
   final String code;
   final int red;
@@ -19,9 +23,9 @@ class ThreadColor {
 
   const ThreadColor.empty({required this.code})
       : name = '',
-        red = 0,
-        green = 0,
-        blue = 0,
+        red = 127,
+        green = 127,
+        blue = 127,
         catalog = '',
         percentage = 100.0;
 
@@ -37,4 +41,9 @@ class ThreadColor {
 
   @override
   String toString() => '$catalog ($code) $percentage%';
+
+  @override
+  List<Object?> get props => [name, code, red, green, blue, catalog, percentage];
+
+  Color toColor() => Color.fromARGB(255, red, green, blue);
 }

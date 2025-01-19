@@ -1,5 +1,12 @@
 {
   "@@locale": "en",
   "appName": "ThreadDigit",
-  "colorManagerSelectMachine": "Select a machine"
+  "colorManagerSelectMachine": "Select a machine",
+  "optimizeColors": "Optimize colors",
+  "sequence": "Sequence",
+  "steps": "Steps",
+  "stepsIsEmpty": "No embroidery steps provided",
+  "changeMachine": "Change machine",
+  "needles": "Needles",
+  "cancel": "Cancel"
 }
