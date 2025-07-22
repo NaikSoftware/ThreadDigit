@@ -29,18 +29,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(
-              builder: (context) => const ColorManagerPage(),
-            );
-          case '/photo_processing':
-            return MaterialPageRoute(
-              builder: (context) => const PhotoProcessingPage(),
-            );
-          default:
-            return MaterialPageRoute(
-              builder: (context) => const ColorManagerPage(),
-            );
+         // Routes here
         }
       },
     );

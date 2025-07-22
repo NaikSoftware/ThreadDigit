@@ -142,4 +142,20 @@ class ColorMatcherUtil {
 
     return (1 - distance / maxDistance) * 100;
   }
+
+  static ThreadColor findByCodeAndCatalog(
+    String code,
+    String catalog,
+    Map<String, List<ThreadColor>> threadCatalogs,
+  ) {
+    final List<ThreadColor>? threadCatalog = threadCatalogs[catalog];
+    if (threadCatalog == null) {
+      return ThreadColor(name: 'Unknown', code: code, red: 127, green: 127, blue: 127, catalog: catalog);
+    }
+    final ThreadColor color = threadCatalog.firstWhere(
+      (color) => color.code == code,
+      orElse: () => ThreadColor(name: 'Unknown', code: code, red: 127, green: 127, blue: 127, catalog: catalog),
+    );
+    return color;
+  }
 }

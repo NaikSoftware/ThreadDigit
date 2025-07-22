@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart' as image_picker;
 import 'package:image/image.dart' as img;
-import 'package:thread_digit/viewport/viewport.dart';
 
 class ImagePicker extends StatelessWidget {
   const ImagePicker({super.key});
@@ -39,11 +38,11 @@ class ImagePicker extends StatelessWidget {
       final Uint8List imageBytes = await imageFile.readAsBytes();
       final img.Image? image = img.decodeImage(imageBytes);
 
-      if (image != null && context.mounted) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => EditorViewport(image: image),
-        ));
-      }
+      // if (image != null && context.mounted) {
+      //   Navigator.of(context).push(MaterialPageRoute(
+      //     builder: (context) => /* some route here */,
+      //   ));
+      // }
     }
   }
 }
