@@ -16,6 +16,11 @@ When working on tasks in this project, **ALWAYS read the documentation in the `d
 
 These documents provide essential context, requirements, and implementation details that must be understood before starting any work.
 
+## Tools
+
+- Use **Serene MCP** for Dart code analysis/editing.
+- Use **Dart MCP** for Dart code analysis, running tests, running error analysis.
+
 ## Project Structure
 
 ```
@@ -40,12 +45,6 @@ thread_digit/
 ### Code Quality
 
 ```bash
-# Analyze single file
-dart analyze path/to/file.dart
-
-# Analyze entire project
-dart analyze
-
 # Format code (use 120 character line length)
 dart format --line-length=120 path/to/file.dart
 ```
@@ -57,16 +56,6 @@ dart format --line-length=120 path/to/file.dart
 ./tools/generate_translations.sh
 # or
 dart run intl_utils:generate
-```
-
-### Testing
-
-```bash
-# Run all tests
-flutter test
-
-# Run specific test
-flutter test test/specific_test.dart
 ```
 
 ## Important Conventions

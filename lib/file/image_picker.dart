@@ -36,7 +36,8 @@ class ImagePicker extends StatelessWidget {
     if (pickedFile != null) {
       final File imageFile = File(pickedFile.path);
       final Uint8List imageBytes = await imageFile.readAsBytes();
-      final img.Image? image = img.decodeImage(imageBytes);
+      // Process image for validation
+      img.decodeImage(imageBytes);
 
       // if (image != null && context.mounted) {
       //   Navigator.of(context).push(MaterialPageRoute(

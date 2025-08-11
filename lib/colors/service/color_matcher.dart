@@ -1,4 +1,9 @@
 import 'dart:math';
+import 'dart:ui';
+
+import 'package:thread_digit/algorithm/models/quantization_result.dart';
+import 'package:thread_digit/algorithm/utils/color_conversion_utils.dart';
+import 'package:thread_digit/algorithm/utils/color_spaces.dart';
 import 'package:thread_digit/colors/model/thread_color.dart';
 
 class ColorMatcherUtil {
@@ -157,5 +162,193 @@ class ColorMatcherUtil {
       orElse: () => ThreadColor(name: 'Unknown', code: code, red: 127, green: 127, blue: 127, catalog: catalog),
     );
     return color;
+  }
+
+  /// Enhanced color matching using CIEDE2000 algorithm for optimal perceptual accuracy
+  static ThreadColor? findOptimalMatch(
+    Color imageColor,
+    List<List<ThreadColor>> threadCatalogs, {
+    ColorDistanceAlgorithm algorithm = ColorDistanceAlgorithm.ciede2000,
+    bool allowNearby = true,
+  }) {
+    if (threadCatalogs.isEmpty) {
+      throw ArgumentError('Thread catalogs cannot be empty');
+    }
+
+    // First try exact match
+    final exactMatch = findColor(
+      (imageColor.r * 255.0).round() & 0xff,
+      (imageColor.g * 255.0).round() & 0xff,
+      (imageColor.b * 255.0).round() & 0xff,
+      threadCatalogs,
+      allowNearby: false,
+    );
+    
+    if (exactMatch != null) {
+      return exactMatch;
+    }
+
+    if (!allowNearby) {
+      return null;
+    }
+
+    // Find best match using specified algorithm
+    switch (algorithm) {
+      case ColorDistanceAlgorithm.ciede2000:
+        return _findBestMatchCiede2000(imageColor, threadCatalogs);
+      case ColorDistanceAlgorithm.labEuclidean:
+        return _findBestMatchLab(imageColor, threadCatalogs);
+      case ColorDistanceAlgorithm.euclidean:
+        return findNearestColor((imageColor.r * 255.0).round() & 0xff, (imageColor.g * 255.0).round() & 0xff, (imageColor.b * 255.0).round() & 0xff, threadCatalogs);
+    }
+  }
+
+  /// Finds best color match using CIEDE2000 distance
+  static ThreadColor? _findBestMatchCiede2000(
+    Color targetColor,
+    List<List<ThreadColor>> threadCatalogs,
+  ) {
+    double minDistance = double.infinity;
+    ThreadColor? bestMatch;
+
+    for (final catalog in threadCatalogs) {
+      for (final threadColor in catalog) {
+        final distance = ColorSpaces.ciede2000Distance(
+          targetColor,
+          threadColor.toColor(),
+        );
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          bestMatch = threadColor;
+        }
+      }
+    }
+
+    if (bestMatch != null) {
+      // Convert CIEDE2000 distance to percentage (ΔE < 3.0 is considered excellent)
+      final maxPerceptualDistance = 100.0;
+      final similarity = max(0, 1 - (minDistance / maxPerceptualDistance)) * 100;
+      return bestMatch.withPercentage(similarity.clamp(0, 100).toDouble());
+    }
+
+    return null;
+  }
+
+  /// Finds best color match using LAB distance
+  static ThreadColor? _findBestMatchLab(
+    Color targetColor,
+    List<List<ThreadColor>> threadCatalogs,
+  ) {
+    double minDistance = double.infinity;
+    ThreadColor? bestMatch;
+
+    for (final catalog in threadCatalogs) {
+      for (final threadColor in catalog) {
+        final distance = ColorSpaces.labDistance(
+          ColorConversionUtils.rgbToLab((targetColor.r * 255.0).round() & 0xff, (targetColor.g * 255.0).round() & 0xff, (targetColor.b * 255.0).round() & 0xff),
+          ColorConversionUtils.rgbToLab(threadColor.red, threadColor.green, threadColor.blue),
+        );
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          bestMatch = threadColor;
+        }
+      }
+    }
+
+    if (bestMatch != null) {
+      // Convert LAB distance to percentage (max LAB distance ~373)
+      const maxLabDistance = 373.0;
+      final similarity = max(0, 1 - (minDistance / maxLabDistance)) * 100;
+      return bestMatch.withPercentage(similarity.clamp(0, 100).toDouble());
+    }
+
+    return null;
+  }
+
+  /// Finds multiple best matches using CIEDE2000 for comparison
+  static List<ThreadColor> findTopMatches(
+    Color imageColor,
+    List<List<ThreadColor>> threadCatalogs,
+    int count, {
+    ColorDistanceAlgorithm algorithm = ColorDistanceAlgorithm.ciede2000,
+  }) {
+    if (count <= 0) {
+      throw ArgumentError('Count must be positive');
+    }
+
+    final List<({ThreadColor color, double distance})> colorDistances = [];
+
+    for (final catalog in threadCatalogs) {
+      for (final threadColor in catalog) {
+        double distance = 0.0;
+        
+        switch (algorithm) {
+          case ColorDistanceAlgorithm.ciede2000:
+            distance = ColorSpaces.ciede2000Distance(imageColor, threadColor.toColor());
+            break;
+          case ColorDistanceAlgorithm.labEuclidean:
+            distance = ColorSpaces.labDistance(
+              ColorConversionUtils.rgbToLab((imageColor.r * 255.0).round() & 0xff, (imageColor.g * 255.0).round() & 0xff, (imageColor.b * 255.0).round() & 0xff),
+              ColorConversionUtils.rgbToLab(threadColor.red, threadColor.green, threadColor.blue),
+            );
+            break;
+          case ColorDistanceAlgorithm.euclidean:
+            distance = ColorSpaces.weightedRgbDistance(imageColor, threadColor.toColor());
+            break;
+        }
+
+        colorDistances.add((color: threadColor, distance: distance));
+      }
+    }
+
+    // Sort by distance and take top matches
+    colorDistances.sort((a, b) => a.distance.compareTo(b.distance));
+    
+    final topMatches = colorDistances.take(count).map((match) {
+      // Calculate similarity percentage based on algorithm
+      double similarity = 0.0;
+      switch (algorithm) {
+        case ColorDistanceAlgorithm.ciede2000:
+          similarity = ColorSpaces.calculateSimilarityPercentage(imageColor, match.color.toColor());
+          break;
+        case ColorDistanceAlgorithm.labEuclidean:
+          const maxLabDistance = 373.0;
+          similarity = max(0, 1 - (match.distance / maxLabDistance)) * 100;
+          break;
+        case ColorDistanceAlgorithm.euclidean:
+          final maxDistance = sqrt(0.299 * pow(255, 2) + 0.587 * pow(255, 2) + 0.114 * pow(255, 2));
+          similarity = max(0, 1 - (match.distance / maxDistance)) * 100;
+          break;
+      }
+      
+      return match.color.withPercentage(similarity.clamp(0, 100).toDouble());
+    }).toList();
+
+    return topMatches;
+  }
+
+  /// Batch color matching for efficient processing of multiple colors
+  static Map<Color, ThreadColor> batchColorMatch(
+    List<Color> colors,
+    List<List<ThreadColor>> threadCatalogs, {
+    ColorDistanceAlgorithm algorithm = ColorDistanceAlgorithm.ciede2000,
+  }) {
+    final Map<Color, ThreadColor> results = {};
+    
+    for (final color in colors) {
+      final match = findOptimalMatch(
+        color,
+        threadCatalogs,
+        algorithm: algorithm,
+      );
+      
+      if (match != null) {
+        results[color] = match;
+      }
+    }
+    
+    return results;
   }
 }
