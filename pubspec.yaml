@@ -3,7 +3,7 @@ description: "Digitizing embroidery software"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.9.0-0 <4.0.0'
+  sdk: ">=3.7.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -35,7 +35,6 @@ flutter_intl:
   enabled: true
 
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
