@@ -3,10 +3,9 @@
   <metadata>
     <emb:design name="Sample Leaf" author="thread_digit" elementCount="3" widthMm="60" heightMm="45">
       <emb:palette>
-        <emb:thread id="stem" catalog="Madeira" code="G003" name="Leaf Green" rgb="#00963C" needle="1" percentage="100.0"/>
-        <emb:thread id="outline" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" needle="2" percentage="100.0"/>
+        <emb:thread id="stem" catalog="Madeira" code="G003" name="Leaf Green" rgb="#00963C" percentage="100.0"/>
+        <emb:thread id="outline" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" percentage="100.0"/>
       </emb:palette>
-      <emb:machine name="Ricoma 1501"/>
     </emb:design>
   </metadata>
   <polygon emb:elementType="fill" emb:threadId="stem" inkstitch:fill_method="auto_fill" inkstitch:angle="40" inkstitch:row_spacing_mm="0.25" inkstitch:trim_after="true" points="15,10 45,12 40,35 12,30" stroke="none" fill="#00963C"/>

@@ -30,9 +30,7 @@ EmbroideryDocument _document(List<EmbroideryElement> elements) {
     metadata: const EmbroideryMetadata(
       name: 'Test',
       author: 'thread_digit',
-      machineName: 'Ricoma 1501',
       threads: _palette,
-      needleByThreadId: {'t0': 1, 't1': 2, 't2': 3},
     ),
   );
 }
@@ -147,7 +145,6 @@ void main() {
       expect(restored, doc);
       expect(restored.elements.map((e) => e.elementType).toList(), ['line', 'fill', 'manual_stitch']);
       expect(restored.metadata.threads, _palette);
-      expect(restored.metadata.needleByThreadId, const {'t0': 1, 't1': 2, 't2': 3});
     });
 
     test('preserves unknown inkstitch params and custom emb params', () {

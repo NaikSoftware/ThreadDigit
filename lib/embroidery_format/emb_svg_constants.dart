@@ -37,7 +37,6 @@ class EmbSvgConstants {
   static const String elDesign = 'design';
   static const String elPalette = 'palette';
   static const String elThread = 'thread';
-  static const String elMachine = 'machine';
 
   // --- <emb:design> attributes ---
   static const String attrName = 'name';
@@ -53,11 +52,7 @@ class EmbSvgConstants {
   static const String attrCatalog = 'catalog';
   static const String attrCode = 'code';
   static const String attrRgb = 'rgb';
-  static const String attrNeedle = 'needle';
   static const String attrPercentage = 'percentage';
-
-  // --- <emb:machine> attributes ---
-  static const String attrMachineName = 'name';
 
   // --- Per-element emb-namespaced attributes ---
   /// Authoritative element-type discriminator. The reader trusts this; a file

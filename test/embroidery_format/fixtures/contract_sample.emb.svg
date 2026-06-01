@@ -3,11 +3,10 @@
   <metadata>
     <emb:design name="Contract Sample" author="thread_digit" notes="all element types" created="2026-06-01T10:00:00.000" elementCount="5" widthMm="100" heightMm="80">
       <emb:palette>
-        <emb:thread id="t0" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" needle="1" percentage="100.0"/>
-        <emb:thread id="t1" catalog="Madeira" code="B002" name="Blue" rgb="#0000FF" needle="2" percentage="100.0"/>
-        <emb:thread id="t2" catalog="Madeira" code="G003" name="Green" rgb="#00AA00" needle="3" percentage="100.0"/>
+        <emb:thread id="t0" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" percentage="100.0"/>
+        <emb:thread id="t1" catalog="Madeira" code="B002" name="Blue" rgb="#0000FF" percentage="100.0"/>
+        <emb:thread id="t2" catalog="Madeira" code="G003" name="Green" rgb="#00AA00" percentage="100.0"/>
       </emb:palette>
-      <emb:machine name="Ricoma 1501"/>
     </emb:design>
   </metadata>
   <polyline emb:elementType="line" emb:threadId="t0" inkstitch:stroke_method="running_stitch" inkstitch:running_stitch_length_mm="2.5" inkstitch:trim_after="true" points="5,5 20,5 35,8" fill="none" stroke="#FF0000" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round"/>

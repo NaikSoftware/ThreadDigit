@@ -49,10 +49,6 @@ millimeter coordinates are read correctly. This avoids the pixel-at-96-DPI
 scaling that trips up hand-built Ink/Stitch files. Keep the `viewBox` aspect
 ratio equal to the `width`/`height` ratio so the scale stays uniform.
 
-DST, PES, and JEF use 0.1 mm units and usually center the design and flip Y. The
-format stores absolute millimeter coordinates with a known origin, so each
-converter applies its own scale, recenter, and flip.
-
 ## Document structure
 
 ```
@@ -60,8 +56,7 @@ converter applies its own scale, recenter, and flip.
   <metadata>
     <emb:design>                      design-level metadata
       <emb:palette>
-        <emb:thread/>                 one per thread: catalog, code, name, rgb, needle
-      <emb:machine/>                  optional target machine
+        <emb:thread/>                 one per thread: catalog, code, name, rgb
   <polyline|polygon|path .../>        one per element, in stitching order
 ```
 
@@ -96,7 +91,6 @@ The palette holds the thread catalog. An element refers to a thread by `id`.
 | `code` | Catalog color code. |
 | `name` | Color name. |
 | `rgb` | Display color as `#RRGGBB`. |
-| `needle` | Optional needle number, 1-based. |
 | `percentage` | Thread blend percentage, default 100. |
 
 The reader treats the palette as the source of truth for color. An element with
@@ -176,10 +170,9 @@ outline:
   <metadata>
     <emb:design name="Sample Leaf" author="thread_digit" elementCount="3" widthMm="60" heightMm="45">
       <emb:palette>
-        <emb:thread id="stem" catalog="Madeira" code="G003" name="Leaf Green" rgb="#00963C" needle="1" percentage="100.0"/>
-        <emb:thread id="outline" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" needle="2" percentage="100.0"/>
+        <emb:thread id="stem" catalog="Madeira" code="G003" name="Leaf Green" rgb="#00963C" percentage="100.0"/>
+        <emb:thread id="outline" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" percentage="100.0"/>
       </emb:palette>
-      <emb:machine name="Ricoma 1501"/>
     </emb:design>
   </metadata>
   <polygon emb:elementType="fill" emb:threadId="stem" inkstitch:fill_method="auto_fill" inkstitch:angle="40" inkstitch:row_spacing_mm="0.25" inkstitch:trim_after="true" points="15,10 45,12 40,35 12,30" stroke="none" fill="#00963C"/>
@@ -202,65 +195,3 @@ as plain `stroke`/`fill` and does not persist a palette in the SVG, so the
 `emb:palette`, `emb:threadId`, and `emb:elementType` attributes survive a round
 trip through our tools but not through Ink/Stitch. The RGB colors survive
 either way. Full catalog fidelity is the reason for the `emb` namespace.
-
-## Converting to DST, PES, and JEF
-
-A converter walks the elements in document order and generates stitches:
-
-1. For a manual element, use the vertices directly as needle points.
-2. For a line, fill, or satin, run the matching stitch algorithm over the
-   geometry and parameters.
-3. Convert millimeters to 0.1 mm units by multiplying by 10.
-4. Insert a jump between elements, a trim where `trim_after` is set, a stop
-   where `stop_after` is set, and a color change where the thread changes.
-5. For DST, encode relative deltas and synthesize trims as jump sequences; for
-   PES and JEF, center the design, build the thread palette, and apply the
-   format's delta limits.
-
-## Round-trip guarantees
-
-A document written and read back returns an equal `EmbroideryDocument` for files
-this writer produces:
-
-- Geometry survives exactly. Whole numbers print without a decimal point; other
-  values use Dart's shortest round-trippable form.
-- Thread color survives in full through `emb:threadId` and the palette.
-- Element type, order, trim/stop flags, and all parameters survive, including
-  parameters the model does not type.
-
-## Module layout
-
-```
-lib/embroidery_format/
-  emb_svg_constants.dart          namespaces, element/attribute/parameter names, defaults
-  model/
-    embroidery_document.dart      EmbroideryDocument (+ fromPattern bridge)
-    embroidery_metadata.dart      EmbroideryMetadata and the thread palette
-    embroidery_element.dart       abstract EmbroideryElement
-    elements/
-      running_stitch_element.dart
-      manual_stitch_element.dart
-      fill_element.dart
-      satin_column_element.dart
-  writer/emb_svg_writer.dart      EmbroideryDocument  ->  .emb.svg string
-  reader/emb_svg_reader.dart      .emb.svg string  ->  EmbroideryDocument
-```
-
-`EmbroideryDocument.fromPattern` maps an `EmbroideryPattern` from the algorithm
-module into manual-stitch elements, so algorithm output writes straight to
-`.emb.svg`. The algorithm models stay unchanged.
-
-### Reading and writing
-
-```dart
-const writer = EmbSvgWriter();
-final svg = writer.write(document);
-await writer.writeToFile(document, 'leaf.emb.svg');
-
-const reader = EmbSvgReader();
-final document = reader.read(svg);
-final fromDisk = await reader.readFile('leaf.emb.svg');
-```
-
-`read` throws a `FormatException` when the input is not well-formed XML or has no
-`<svg>` root.

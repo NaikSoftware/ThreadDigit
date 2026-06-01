@@ -75,14 +75,6 @@ class EmbSvgWriter {
             builder.attribute(EmbSvgConstants.attrHeightMm, _num(document.dimensions.height));
 
             _buildPalette(builder, metadata);
-
-            if (metadata.machineName != null) {
-              builder.element(
-                EmbSvgConstants.elMachine,
-                namespace: EmbSvgConstants.embNamespace,
-                nest: () => builder.attribute(EmbSvgConstants.attrMachineName, metadata.machineName!),
-              );
-            }
           },
         );
       },
@@ -90,7 +82,6 @@ class EmbSvgWriter {
   }
 
   void _buildPalette(XmlBuilder builder, EmbroideryMetadata metadata) {
-    final needleByThreadId = metadata.needleByThreadId;
     builder.element(
       EmbSvgConstants.elPalette,
       namespace: EmbSvgConstants.embNamespace,
@@ -105,10 +96,6 @@ class EmbSvgWriter {
               builder.attribute(EmbSvgConstants.attrCode, color.code);
               builder.attribute(EmbSvgConstants.attrName, color.name);
               builder.attribute(EmbSvgConstants.attrRgb, _rgb(color));
-              final needle = needleByThreadId[id];
-              if (needle != null) {
-                builder.attribute(EmbSvgConstants.attrNeedle, '$needle');
-              }
               builder.attribute(EmbSvgConstants.attrPercentage, color.percentage.toString());
             },
           );

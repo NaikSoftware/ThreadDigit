@@ -42,10 +42,10 @@ class EmbSvgReader {
     }
 
     final design = _firstByLocalName(root, EmbSvgConstants.elDesign);
-    final palette = _parsePalette(design);
-    final metadata = _parseMetadata(design, palette);
+    final threadsById = _parsePalette(design);
+    final metadata = _parseMetadata(design, threadsById);
     final dimensions = _parseDimensions(root, design);
-    final elements = _parseElements(root, palette.threadsById);
+    final elements = _parseElements(root, threadsById);
 
     return EmbroideryDocument(dimensions: dimensions, elements: elements, metadata: metadata);
   }
@@ -75,17 +75,16 @@ class EmbSvgReader {
 
   // --- Metadata & palette -------------------------------------------------
 
-  /// Builds the thread palette keyed by id, plus a needle-per-id map.
-  _Palette _parsePalette(XmlElement? design) {
+  /// Builds the thread palette keyed by id.
+  Map<String, ThreadColor> _parsePalette(XmlElement? design) {
     final threadsById = <String, ThreadColor>{};
-    final needleByThreadId = <String, int>{};
     if (design == null) {
-      return _Palette(threadsById, needleByThreadId);
+      return threadsById;
     }
 
     final paletteEl = _firstByLocalName(design, EmbSvgConstants.elPalette);
     if (paletteEl == null) {
-      return _Palette(threadsById, needleByThreadId);
+      return threadsById;
     }
 
     for (final thread in paletteEl.findElements(EmbSvgConstants.elThread, namespace: '*')) {
@@ -104,29 +103,21 @@ class EmbSvgReader {
         catalog: _localAttr(thread, EmbSvgConstants.attrCatalog) ?? '',
         percentage: percentage,
       );
-
-      final needle = int.tryParse(_localAttr(thread, EmbSvgConstants.attrNeedle) ?? '');
-      if (needle != null) {
-        needleByThreadId[id] = needle;
-      }
     }
-    return _Palette(threadsById, needleByThreadId);
+    return threadsById;
   }
 
-  EmbroideryMetadata _parseMetadata(XmlElement? design, _Palette palette) {
+  EmbroideryMetadata _parseMetadata(XmlElement? design, Map<String, ThreadColor> threadsById) {
     if (design == null) {
-      return EmbroideryMetadata(threads: palette.threadsById, needleByThreadId: palette.needleByThreadId);
+      return EmbroideryMetadata(threads: threadsById);
     }
-    final machine = _firstByLocalName(design, EmbSvgConstants.elMachine);
     final created = _localAttr(design, EmbSvgConstants.attrCreated);
     return EmbroideryMetadata(
       name: _localAttr(design, EmbSvgConstants.attrName),
       author: _localAttr(design, EmbSvgConstants.attrAuthor),
       notes: _localAttr(design, EmbSvgConstants.attrNotes),
-      machineName: machine == null ? null : _localAttr(machine, EmbSvgConstants.attrMachineName),
       createdAt: created == null ? null : DateTime.tryParse(created),
-      threads: palette.threadsById,
-      needleByThreadId: palette.needleByThreadId,
+      threads: threadsById,
     );
   }
 
@@ -426,12 +417,4 @@ class EmbSvgReader {
     }
     return int.parse(hex.substring(index * 2, index * 2 + 2), radix: 16);
   }
-}
-
-/// Internal carrier for the parsed palette and its needle assignments.
-class _Palette {
-  const _Palette(this.threadsById, this.needleByThreadId);
-
-  final Map<String, ThreadColor> threadsById;
-  final Map<String, int> needleByThreadId;
 }

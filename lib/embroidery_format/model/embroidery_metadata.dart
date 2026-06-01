@@ -10,10 +10,8 @@ class EmbroideryMetadata extends Equatable {
     this.name,
     this.author,
     this.notes,
-    this.machineName,
     this.createdAt,
     this.threads = const {},
-    this.needleByThreadId = const {},
   });
 
   /// Human-readable design name.
@@ -25,40 +23,30 @@ class EmbroideryMetadata extends Equatable {
   /// Free-form notes.
   final String? notes;
 
-  /// Target machine name, if known.
-  final String? machineName;
-
   /// Creation timestamp (stored as ISO-8601).
   final DateTime? createdAt;
 
   /// Thread palette keyed by thread id. Carries full catalog data per thread.
   final Map<String, ThreadColor> threads;
 
-  /// Optional needle assignment per thread id (1-based needle numbers).
-  final Map<String, int> needleByThreadId;
-
   EmbroideryMetadata copyWith({
     String? name,
     String? author,
     String? notes,
-    String? machineName,
     DateTime? createdAt,
     Map<String, ThreadColor>? threads,
-    Map<String, int>? needleByThreadId,
   }) {
     return EmbroideryMetadata(
       name: name ?? this.name,
       author: author ?? this.author,
       notes: notes ?? this.notes,
-      machineName: machineName ?? this.machineName,
       createdAt: createdAt ?? this.createdAt,
       threads: threads ?? this.threads,
-      needleByThreadId: needleByThreadId ?? this.needleByThreadId,
     );
   }
 
   @override
-  List<Object?> get props => [name, author, notes, machineName, createdAt, threads, needleByThreadId];
+  List<Object?> get props => [name, author, notes, createdAt, threads];
 
   @override
   String toString() => 'EmbroideryMetadata(name: $name, threads: ${threads.length})';
