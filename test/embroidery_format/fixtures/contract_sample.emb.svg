@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkstitch="http://inkstitch.org/namespace" xmlns:emb="http://thread-digit.app/embroidery/v1" width="100mm" height="80mm" viewBox="0 0 100 80" emb:version="2.0" emb:units="mm">
+  <metadata>
+    <emb:design name="Contract Sample" author="thread_digit" notes="all element types" created="2026-06-01T10:00:00.000" elementCount="5" widthMm="100" heightMm="80">
+      <emb:palette>
+        <emb:thread id="t0" catalog="Madeira" code="R001" name="Red" rgb="#FF0000" percentage="100.0"/>
+        <emb:thread id="t1" catalog="Madeira" code="B002" name="Blue" rgb="#0000FF" percentage="100.0"/>
+        <emb:thread id="t2" catalog="Madeira" code="G003" name="Green" rgb="#00AA00" percentage="100.0"/>
+      </emb:palette>
+    </emb:design>
+  </metadata>
+  <polyline emb:elementType="line" emb:threadId="t0" inkstitch:stroke_method="running_stitch" inkstitch:running_stitch_length_mm="2.5" inkstitch:trim_after="true" points="5,5 20,5 35,8" fill="none" stroke="#FF0000" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline emb:elementType="manual_stitch" emb:threadId="t0" inkstitch:stroke_method="manual_stitch" inkstitch:trim_after="true" points="35,8 38,10 41,12 44,11" fill="none" stroke="#FF0000" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon emb:elementType="fill" emb:threadId="t1" inkstitch:fill_method="auto_fill" inkstitch:angle="45" inkstitch:row_spacing_mm="0.25" points="50,20 80,20 80,50 50,50" stroke="none" fill="#0000FF"/>
+  <polygon emb:elementType="photo_stitch" emb:threadId="t2" inkstitch:fill_method="auto_fill" inkstitch:angle="0" points="10,55 40,55 40,75 10,75" stroke="none" fill="#00AA00"/>
+  <path emb:elementType="satin_column" emb:threadId="t2" inkstitch:satin_column="true" inkstitch:zigzag_spacing_mm="0.4" inkstitch:pull_compensation_mm="0.2" inkstitch:trim_after="true" d="M 55,55 L 60,70 L 65,72 M 60,55 L 65,70 L 70,72" fill="none" stroke="#00AA00" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
